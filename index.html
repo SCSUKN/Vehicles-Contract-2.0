@@ -12,7 +12,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     
     <style>
-        /* স্ক্রিন ওভারফ্লো এবং টেক্সট ব্রেকিং ফিক্স */
         html, body { 
             max-width: 100vw;
             overflow-x: hidden;
@@ -20,13 +19,11 @@
             background-color: #f8fafc; 
         }
 
-        /* টেক্সট যাতে স্ক্রিন কেটে না যায় */
         p, span, h1, h2, h3, h4, h5, td, th {
             overflow-wrap: anywhere;
             word-break: break-word;
         }
 
-        /* কাস্টম স্ক্রলবার */
         .custom-scrollbar::-webkit-scrollbar { 
             height: 6px; 
             width: 6px;
@@ -126,10 +123,10 @@
                         </h2>
                         <p class="text-[11px] sm:text-xs text-slate-500 mt-0.5">List of drivers, helpers, managers, SCS, staff & loaders.</p>
                     </div>
-                    <!-- Search Input -->
+                    <!-- Smart Search Input -->
                     <div class="relative w-full sm:w-72">
                         <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 sm:top-3 text-slate-400 text-xs sm:text-sm"></i>
-                        <input type="text" id="search-input" onkeyup="filterDrivers()" placeholder="Search name or phone..." class="w-full bg-white border border-slate-300 rounded-xl pl-9 pr-3 py-1.5 sm:py-2 text-xs sm:text-sm text-slate-800 focus:outline-none focus:border-indigo-600">
+                        <input type="text" id="search-input" onkeyup="filterDrivers()" placeholder="Search name or phone (Smart Match)..." class="w-full bg-white border border-slate-300 rounded-xl pl-9 pr-3 py-1.5 sm:py-2 text-xs sm:text-sm text-slate-800 focus:outline-none focus:border-indigo-600">
                     </div>
                 </div>
 
@@ -140,7 +137,7 @@
                             <tr class="bg-slate-100 border-b border-slate-200 text-slate-600 text-[11px] sm:text-xs font-bold uppercase tracking-wider">
                                 <th class="p-3 sm:p-4 pl-4 sm:pl-6">Name</th>
                                 <th class="p-3 sm:p-4">Category</th>
-                                <th class="p-3 sm:p-4">Phone Number & Call</th>
+                                <th class="p-3 sm:p-4">Phone Number & Direct Call</th>
                                 <th class="p-3 sm:p-4">Vehicle Number</th>
                                 <th class="p-3 sm:p-4 pr-4 sm:pr-6">Status</th>
                             </tr>
@@ -155,6 +152,43 @@
 
         <!-- Admin Panel Section -->
         <div id="content-settings" class="hidden space-y-4 sm:space-y-6">
+            <!-- Fanvil Phone Setup Card -->
+            <div class="bg-white border border-slate-200 rounded-xl sm:rounded-2xl p-4 sm:p-8 shadow-sm max-w-3xl mx-auto">
+                <div class="flex items-center justify-between pb-4 sm:pb-6 border-b border-slate-200 mb-4 sm:mb-6">
+                    <div>
+                        <h2 class="text-lg sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
+                            <i class="fa-solid fa-phone-volume text-emerald-600"></i> Fanvil IP Phone Setup
+                        </h2>
+                        <p class="text-slate-500 text-[11px] sm:text-xs mt-0.5">Enter Fanvil IP, username and password for auto-dialing.</p>
+                    </div>
+                    <span class="bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold px-2.5 py-1 rounded-full text-[10px] sm:text-xs shrink-0">
+                        <i class="fa-solid fa-plug"></i> Auto Dial
+                    </span>
+                </div>
+
+                <form onsubmit="handleSaveFanvilConfig(event)" class="space-y-3 sm:space-y-5">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Fanvil IP Address *</label>
+                            <input type="text" id="fanvil-ip" placeholder="192.168.1.100" required class="w-full bg-slate-50 border border-slate-300 rounded-lg sm:rounded-xl px-3 py-2 sm:px-4 sm:py-2.5 text-xs sm:text-sm text-slate-900 focus:outline-none focus:border-emerald-600">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Web Username *</label>
+                            <input type="text" id="fanvil-user" placeholder="admin" required class="w-full bg-slate-50 border border-slate-300 rounded-lg sm:rounded-xl px-3 py-2 sm:px-4 sm:py-2.5 text-xs sm:text-sm text-slate-900 focus:outline-none focus:border-emerald-600">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Web Password *</label>
+                            <input type="password" id="fanvil-pass" placeholder="admin" required class="w-full bg-slate-50 border border-slate-300 rounded-lg sm:rounded-xl px-3 py-2 sm:px-4 sm:py-2.5 text-xs sm:text-sm text-slate-900 focus:outline-none focus:border-emerald-600">
+                        </div>
+                    </div>
+                    <div class="pt-2">
+                        <button type="submit" class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-5 py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm transition-all shadow-md flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-floppy-disk"></i> Save Fanvil Setup
+                        </button>
+                    </div>
+                </form>
+            </div>
+
             <!-- Add Entry Card -->
             <div class="bg-white border border-slate-200 rounded-xl sm:rounded-2xl p-4 sm:p-8 shadow-sm max-w-3xl mx-auto">
                 <div class="flex items-center justify-between pb-4 sm:pb-6 border-b border-slate-200 mb-4 sm:mb-6">
@@ -223,7 +257,7 @@
                         <input type="text" id="delete-search-input" onkeyup="renderAdminDeleteList()" placeholder="Search contract to edit/delete..." class="w-full bg-white border border-slate-300 rounded-lg sm:rounded-xl pl-9 pr-3 py-1.5 sm:py-2 text-xs sm:text-sm text-slate-800 focus:outline-none focus:border-indigo-500">
                     </div>
                     <div id="admin-delete-list" class="divide-y divide-slate-200 max-h-72 overflow-y-auto custom-scrollbar pr-1">
-                        <!-- Dynamic Delete/Edit Items -->
+                        <!-- Dynamic Items -->
                     </div>
                 </div>
             </div>
@@ -343,7 +377,7 @@
         </div>
     </div>
 
-    <!-- Application Script -->
+    <!-- Application Script with Fuzzy Search Logic -->
     <script>
         let isLoggedIn = false;
 
@@ -356,6 +390,54 @@
         ];
 
         let driversData = [];
+
+        // Fuzzy Matching Algorithm (Levenshtein Distance) for Spelling Mistake Match
+        function getLevenshteinDistance(a, b) {
+            if (a.length === 0) return b.length;
+            if (b.length === 0) return a.length;
+            const matrix = [];
+            for (let i = 0; i <= b.length; i++) matrix[i] = [i];
+            for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
+
+            for (let i = 1; i <= b.length; i++) {
+                for (let j = 1; j <= a.length; j++) {
+                    if (b.charAt(i - 1) === a.charAt(j - 1)) {
+                        matrix[i][j] = matrix[i - 1][j - 1];
+                    } else {
+                        matrix[i][j] = Math.min(
+                            matrix[i - 1][j - 1] + 1,
+                            matrix[i][j - 1] + 1,
+                            matrix[i - 1][j] + 1
+                        );
+                    }
+                }
+            }
+            return matrix[b.length][a.length];
+        }
+
+        // Fuzzy Match Checker
+        function isFuzzyMatch(targetStr, searchStr) {
+            targetStr = targetStr.toLowerCase();
+            searchStr = searchStr.toLowerCase();
+
+            if (targetStr.includes(searchStr)) return true;
+
+            const targetWords = targetStr.split(/\s+/);
+            const searchWords = searchStr.split(/\s+/);
+
+            for (let sWord of searchWords) {
+                if (sWord.length <= 2) continue;
+                for (let tWord of targetWords) {
+                    const dist = getLevenshteinDistance(tWord, sWord);
+                    const maxLen = Math.max(tWord.length, sWord.length);
+                    // Allow up to 2 character mistakes or 35% error tolerance
+                    if (dist <= 2 || (dist / maxLen) <= 0.35) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
 
         function loadDriversData() {
             const saved = localStorage.getItem('vehicles_contracts_data');
@@ -379,8 +461,55 @@
             return localStorage.getItem('admin_pin') || "9876";
         }
 
+        function loadFanvilConfig() {
+            document.getElementById('fanvil-ip').value = localStorage.getItem('fanvil_ip') || '';
+            document.getElementById('fanvil-user').value = localStorage.getItem('fanvil_user') || 'admin';
+            document.getElementById('fanvil-pass').value = localStorage.getItem('fanvil_pass') || 'admin';
+        }
+
+        function handleSaveFanvilConfig(e) {
+            e.preventDefault();
+            const ip = document.getElementById('fanvil-ip').value.trim();
+            const user = document.getElementById('fanvil-user').value.trim();
+            const pass = document.getElementById('fanvil-pass').value.trim();
+
+            localStorage.setItem('fanvil_ip', ip);
+            localStorage.setItem('fanvil_user', user);
+            localStorage.setItem('fanvil_pass', pass);
+
+            alert('Fanvil IP Phone configuration saved successfully!');
+        }
+
+        function dialViaFanvil(phoneNum) {
+            const ip = localStorage.getItem('fanvil_ip');
+            const user = localStorage.getItem('fanvil_user') || 'admin';
+            const pass = localStorage.getItem('fanvil_pass') || 'admin';
+
+            const cleanNumber = phoneNum.replace(/[^0-9+]/g, '');
+
+            if (!ip) {
+                window.location.href = `tel:${cleanNumber}`;
+                return;
+            }
+
+            const dialUrl = `http://${ip}/cgi-bin/ConfigManApp.com?key=${cleanNumber}&post_key=dial`;
+
+            fetch(dialUrl, {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Basic ' + btoa(user + ":" + pass)
+                },
+                mode: 'no-cors'
+            }).then(() => {
+                alert(`Dialing ${cleanNumber} via Fanvil IP Phone (${ip})...`);
+            }).catch(err => {
+                window.location.href = `tel:${cleanNumber}`;
+            });
+        }
+
         document.addEventListener("DOMContentLoaded", () => {
             loadDriversData();
+            loadFanvilConfig();
             renderDriversTable(driversData);
             updateDashboardStats();
             document.getElementById('current-year').innerText = new Date().getFullYear();
@@ -513,7 +642,7 @@
         function renderDriversTable(data) {
             const tbody = document.getElementById('driver-table-body');
             if (data.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-slate-400">No matching records found.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-slate-400 font-medium">No matching records found.</td></tr>`;
                 return;
             }
 
@@ -531,9 +660,9 @@
                     <td class="p-3 sm:p-4 whitespace-nowrap">
                         <div class="flex items-center gap-2">
                             <span class="font-mono font-extrabold text-xs sm:text-sm text-slate-900">${d.phone}</span>
-                            <a href="tel:${d.phone.replace(/[^0-9+]/g, '')}" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-md sm:rounded-lg text-[10px] sm:text-xs font-bold transition-all flex items-center gap-1 shadow-sm">
+                            <button onclick="dialViaFanvil('${d.phone}')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-md sm:rounded-lg text-[10px] sm:text-xs font-bold transition-all flex items-center gap-1 shadow-sm">
                                 <i class="fa-solid fa-phone"></i> Call
-                            </a>
+                            </button>
                         </div>
                     </td>
                     <td class="p-3 sm:p-4 text-slate-700 font-medium">${d.vehicle ? d.vehicle : '<span class="text-slate-400">—</span>'}</td>
@@ -551,10 +680,11 @@
             const searchQuery = (document.getElementById('delete-search-input')?.value || '').toLowerCase().trim();
 
             const filteredData = driversData.filter(d => 
-                d.name.toLowerCase().includes(searchQuery) ||
+                !searchQuery ||
+                isFuzzyMatch(d.name, searchQuery) ||
                 d.phone.includes(searchQuery) ||
-                (d.category && d.category.toLowerCase().includes(searchQuery)) ||
-                (d.vehicle && d.vehicle.toLowerCase().includes(searchQuery))
+                (d.category && isFuzzyMatch(d.category, searchQuery)) ||
+                (d.vehicle && isFuzzyMatch(d.vehicle, searchQuery))
             );
 
             if (filteredData.length === 0) {
@@ -643,14 +773,21 @@
             document.getElementById('stat-active').innerText = active;
         }
 
+        // Smart Search Handler (Handles Spelling Errors & Partial Names)
         function filterDrivers() {
-            const query = document.getElementById('search-input').value.toLowerCase();
+            const query = document.getElementById('search-input').value.trim();
+            if (!query) {
+                renderDriversTable(driversData);
+                return;
+            }
+
             const filtered = driversData.filter(d => 
-                d.name.toLowerCase().includes(query) ||
-                (d.category && d.category.toLowerCase().includes(query)) ||
-                d.vehicle.toLowerCase().includes(query) ||
-                d.phone.includes(query)
+                isFuzzyMatch(d.name, query) ||
+                d.phone.includes(query) ||
+                (d.category && isFuzzyMatch(d.category, query)) ||
+                (d.vehicle && isFuzzyMatch(d.vehicle, query))
             );
+
             renderDriversTable(filtered);
         }
 
@@ -678,8 +815,6 @@
 
             document.getElementById('add-driver-form').reset();
             alert('New contract added successfully!');
-            
-            // এডমিন প্যানেলেই থাকবে, লিস্ট পেজে রিডাইরেক্ট হবে না
         }
     </script>
 </body>
