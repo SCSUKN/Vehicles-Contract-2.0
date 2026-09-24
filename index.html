@@ -124,7 +124,7 @@
                         <h2 class="text-base sm:text-xl font-bold text-slate-900 flex items-center gap-2">
                             <i class="fa-solid fa-list-check text-indigo-600"></i> Contracts Directory
                         </h2>
-                        <p class="text-[11px] sm:text-xs text-slate-500 mt-0.5">List of drivers, helpers, managers, staff & loaders.</p>
+                        <p class="text-[11px] sm:text-xs text-slate-500 mt-0.5">List of drivers, helpers, managers, SCS, staff & loaders.</p>
                     </div>
                     <!-- Search Input -->
                     <div class="relative w-full sm:w-72">
@@ -181,6 +181,7 @@
                                 <option value="Driver">Driver</option>
                                 <option value="Helper">Helper</option>
                                 <option value="Manager">Manager</option>
+                                <option value="SCS">SCS</option>
                                 <option value="Staff">Staff</option>
                                 <option value="Loader">Loader</option>
                             </select>
@@ -321,6 +322,7 @@
                         <option value="Driver">Driver</option>
                         <option value="Helper">Helper</option>
                         <option value="Manager">Manager</option>
+                        <option value="SCS">SCS</option>
                         <option value="Staff">Staff</option>
                         <option value="Loader">Loader</option>
                     </select>
@@ -349,7 +351,7 @@
             { id: 1, name: "Karim Hossain", category: "Driver", phone: "+880 1711-000000", vehicle: "Covered Van (DH-11-1234)", status: "Active" },
             { id: 2, name: "Anisur Rahman", category: "Manager", phone: "+880 1511-000000", vehicle: "", status: "Active" },
             { id: 3, name: "Rahim Uddin", category: "Helper", phone: "+880 1811-000000", vehicle: "Pickup Truck (DH-55-5678)", status: "Active" },
-            { id: 4, name: "Shafiqul Islam", category: "Staff", phone: "+880 1911-000000", vehicle: "Heavy Truck (DH-99-9876)", status: "Active" },
+            { id: 4, name: "Shafiqul Islam", category: "SCS", phone: "+880 1911-000000", vehicle: "Express Delivery (DH-99-9876)", status: "Active" },
             { id: 5, name: "Jamal Uddin", category: "Loader", phone: "+880 1611-000000", vehicle: "", status: "Active" }
         ];
 
@@ -500,6 +502,7 @@
             switch (category) {
                 case 'Manager': return 'bg-amber-100 text-amber-800 border-amber-200';
                 case 'Helper': return 'bg-emerald-100 text-emerald-800 border-emerald-200';
+                case 'SCS': return 'bg-indigo-100 text-indigo-800 border-indigo-200';
                 case 'Staff': return 'bg-purple-100 text-purple-800 border-purple-200';
                 case 'Loader': return 'bg-orange-100 text-orange-800 border-orange-200';
                 case 'Driver':
@@ -675,7 +678,8 @@
 
             document.getElementById('add-driver-form').reset();
             alert('New contract added successfully!');
-            switchTab('drivers');
+            
+            // এডমিন প্যানেলেই থাকবে, লিস্ট পেজে রিডাইরেক্ট হবে না
         }
     </script>
 </body>
