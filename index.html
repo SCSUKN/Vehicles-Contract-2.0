@@ -4,175 +4,679 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vehicles Contract 2.0</title>
-    <!-- Tailwind CSS -->
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome for Icons -->
+    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts (Inter) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     
     <style>
-        /* মূল ওভারফ্লো এবং বডি ফিক্স */
-        html, body {
-            max-width: 100%;
+        /* স্ক্রিন ওভারফ্লো এবং টেক্সট ব্রেকিং ফিক্স */
+        html, body { 
+            max-width: 100vw;
             overflow-x: hidden;
-            background-color: #f8fafc;
+            font-family: 'Inter', sans-serif; 
+            background-color: #f8fafc; 
         }
-        
-        /* লম্বা টেক্সট স্ক্রিনের বাইরে যাওয়া ঠেকাতে */
-        p, span, h1, h2, h3, h4, h5, td, div {
-            overflow-wrap: break-word;
+
+        /* টেক্সট যাতে স্ক্রিন কেটে না যায় */
+        p, span, h1, h2, h3, h4, h5, td, th {
+            overflow-wrap: anywhere;
             word-break: break-word;
         }
 
-        /* মোবাইলে টেবিল সুন্দরভাবে স্ক্রল করার জন্য কাস্টম স্ক্রলবার */
-        .table-container::-webkit-scrollbar {
-            height: 6px;
+        /* কাস্টম স্ক্রলবার */
+        .custom-scrollbar::-webkit-scrollbar { 
+            height: 6px; 
+            width: 6px;
         }
-        .table-container::-webkit-scrollbar-thumb {
-            background-color: #cbd5e1;
-            border-radius: 10px;
+        .custom-scrollbar::-webkit-scrollbar-track { 
+            background: #f1f5f9; 
+            border-radius: 8px; 
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb { 
+            background: #cbd5e1; 
+            border-radius: 8px; 
         }
     </style>
 </head>
-<body class="text-slate-800">
+<body class="text-slate-800 min-h-screen flex flex-col antialiased">
 
-    <!-- Header -->
-    <header class="bg-indigo-600 text-white p-4 shadow-md">
-        <div class="container mx-auto flex justify-between items-center w-full px-2">
-            <h1 class="text-lg md:text-xl font-bold flex items-center gap-2">
-                <i class="fa-solid fa-truck"></i> Vehicles Contract 2.0
-            </h1>
-            <button onclick="adminLogin()" class="bg-indigo-800 hover:bg-indigo-900 px-3 py-1.5 md:px-4 md:py-2 rounded text-xs md:text-sm font-bold transition shadow-sm">
-                Admin Panel
-            </button>
+    <!-- Header Navigation -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16 sm:h-20">
+                <!-- Brand / Logo -->
+                <div onclick="window.location.reload()" class="flex items-center space-x-2 sm:space-x-3 cursor-pointer group">
+                    <div class="bg-indigo-600 p-2 sm:p-2.5 rounded-xl shadow-md group-hover:bg-indigo-700 transition-colors">
+                        <i class="fa-solid fa-truck-fast text-lg sm:text-2xl text-white"></i>
+                    </div>
+                    <div>
+                        <span class="font-extrabold text-lg sm:text-2xl tracking-tight text-slate-900 block leading-none">
+                            Vehicles Contract <span class="text-indigo-600">2.0</span>
+                        </span>
+                        <span class="text-[10px] sm:text-xs text-slate-500 font-medium hidden sm:block">Fleet & Personnel Management</span>
+                    </div>
+                </div>
+
+                <!-- Admin Action Button -->
+                <div class="flex items-center space-x-2 sm:space-x-4">
+                    <div id="auth-button-container">
+                        <button onclick="showLoginModal()" id="login-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 sm:px-5 sm:py-2.5 rounded-xl font-semibold transition-all flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm shadow-md">
+                            <i class="fa-solid fa-right-to-bracket"></i> <span>Login</span>
+                        </button>
+                        <div id="user-logged-in" class="hidden items-center space-x-2 sm:space-x-3">
+                            <span class="text-[10px] sm:text-xs bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-1 sm:px-3 sm:py-1.5 rounded-full font-semibold flex items-center gap-1">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Admin
+                            </span>
+                            <button onclick="logout()" class="bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-1">
+                                <i class="fa-solid fa-right-from-bracket"></i> Logout
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </header>
 
-    <!-- Main Content -->
-    <main class="container mx-auto p-4 mt-4 w-full">
+    <!-- Main Container -->
+    <main class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 flex-grow w-full space-y-6 sm:space-y-8">
         
-        <!-- Search Bar -->
-        <div class="mb-6 flex flex-col md:flex-row justify-between items-center gap-4">
-            <div class="relative w-full md:w-1/2">
-                <i class="fa-solid fa-search absolute left-3 top-3 text-gray-400"></i>
-                <input type="text" id="searchInput" placeholder="Search by name, phone or vehicle..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none shadow-sm text-sm">
-            </div>
-            <button class="w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg font-bold text-sm shadow-md transition">
-                <i class="fa-solid fa-plus mr-1"></i> Add Contract
+        <!-- Navigation Tabs Switcher -->
+        <div class="flex bg-slate-200/80 p-1 rounded-xl sm:rounded-2xl border border-slate-300 max-w-md mx-auto">
+            <button onclick="switchTab('drivers')" id="tab-drivers" class="flex-1 py-2 px-3 sm:py-2.5 sm:px-4 text-center font-bold rounded-lg sm:rounded-xl text-indigo-700 bg-white shadow-sm transition-all flex items-center justify-center gap-2 text-xs sm:text-sm">
+                <i class="fa-solid fa-address-book"></i> Contracts List
+            </button>
+            <button onclick="openSettings()" id="tab-settings" class="flex-1 py-2 px-3 sm:py-2.5 sm:px-4 text-center font-bold rounded-lg sm:rounded-xl text-slate-600 hover:text-indigo-600 transition-all flex items-center justify-center gap-2 text-xs sm:text-sm">
+                <i class="fa-solid fa-sliders"></i> Admin Panel
             </button>
         </div>
 
-        <!-- Responsive Table Container -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden w-full">
-            <!-- overflow-x-auto ক্লাসটি মোবাইলে টেবিলকে ডানে-বামে সুন্দর করে স্ক্রল করতে সাহায্য করবে -->
-            <div class="overflow-x-auto w-full table-container">
-                <table class="w-full min-w-[800px] text-left border-collapse">
-                    <thead class="bg-slate-100 text-slate-600 text-xs uppercase tracking-wide">
-                        <tr>
-                            <th class="p-4 font-bold">Driver Name</th>
-                            <th class="p-4 font-bold">Category</th>
-                            <th class="p-4 font-bold">Contact</th>
-                            <th class="p-4 font-bold">Vehicle Info</th>
-                            <th class="p-4 font-bold">Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tableBody" class="divide-y divide-gray-100 text-sm">
-                        <!-- JavaScript দিয়ে ডাটা রেন্ডার হবে -->
-                    </tbody>
-                </table>
+        <!-- Drivers & Contracts Section -->
+        <div id="content-drivers" class="space-y-4 sm:space-y-6">
+            <!-- Stats Bar -->
+            <div class="grid grid-cols-2 gap-3 sm:gap-5">
+                <div class="bg-white border border-slate-200 rounded-xl sm:rounded-2xl p-4 sm:p-6 flex items-center justify-between shadow-sm">
+                    <div>
+                        <p class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 mb-0.5 sm:mb-1">Total Personnel</p>
+                        <h4 id="stat-total" class="text-2xl sm:text-5xl font-black text-slate-900 tracking-tight">0</h4>
+                    </div>
+                    <div class="p-2.5 sm:p-4 bg-indigo-50 text-indigo-600 rounded-xl border border-indigo-100">
+                        <i class="fa-solid fa-users text-lg sm:text-3xl"></i>
+                    </div>
+                </div>
+                <div class="bg-white border border-slate-200 rounded-xl sm:rounded-2xl p-4 sm:p-6 flex items-center justify-between shadow-sm">
+                    <div>
+                        <p class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 mb-0.5 sm:mb-1">Active Contracts</p>
+                        <h4 id="stat-active" class="text-2xl sm:text-5xl font-black text-emerald-600 tracking-tight">0</h4>
+                    </div>
+                    <div class="p-2.5 sm:p-4 bg-emerald-50 text-emerald-600 rounded-xl border border-emerald-100">
+                        <i class="fa-solid fa-file-circle-check text-lg sm:text-3xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table Container -->
+            <div class="bg-white border border-slate-200 rounded-xl sm:rounded-2xl shadow-sm overflow-hidden">
+                <div class="p-4 sm:p-6 border-b border-slate-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-slate-50/50">
+                    <div>
+                        <h2 class="text-base sm:text-xl font-bold text-slate-900 flex items-center gap-2">
+                            <i class="fa-solid fa-list-check text-indigo-600"></i> Contracts Directory
+                        </h2>
+                        <p class="text-[11px] sm:text-xs text-slate-500 mt-0.5">List of drivers, helpers, managers, staff & loaders.</p>
+                    </div>
+                    <!-- Search Input -->
+                    <div class="relative w-full sm:w-72">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 sm:top-3 text-slate-400 text-xs sm:text-sm"></i>
+                        <input type="text" id="search-input" onkeyup="filterDrivers()" placeholder="Search name or phone..." class="w-full bg-white border border-slate-300 rounded-xl pl-9 pr-3 py-1.5 sm:py-2 text-xs sm:text-sm text-slate-800 focus:outline-none focus:border-indigo-600">
+                    </div>
+                </div>
+
+                <!-- Horizontal Scroll for Mobile Table -->
+                <div class="overflow-x-auto custom-scrollbar w-full">
+                    <table class="w-full text-left border-collapse min-w-[600px]">
+                        <thead>
+                            <tr class="bg-slate-100 border-b border-slate-200 text-slate-600 text-[11px] sm:text-xs font-bold uppercase tracking-wider">
+                                <th class="p-3 sm:p-4 pl-4 sm:pl-6">Name</th>
+                                <th class="p-3 sm:p-4">Category</th>
+                                <th class="p-3 sm:p-4">Phone Number & Call</th>
+                                <th class="p-3 sm:p-4">Vehicle Number</th>
+                                <th class="p-3 sm:p-4 pr-4 sm:pr-6">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="driver-table-body" class="divide-y divide-slate-200 text-xs sm:text-sm text-slate-700">
+                            <!-- Dynamic Rows -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
+        <!-- Admin Panel Section -->
+        <div id="content-settings" class="hidden space-y-4 sm:space-y-6">
+            <!-- Add Entry Card -->
+            <div class="bg-white border border-slate-200 rounded-xl sm:rounded-2xl p-4 sm:p-8 shadow-sm max-w-3xl mx-auto">
+                <div class="flex items-center justify-between pb-4 sm:pb-6 border-b border-slate-200 mb-4 sm:mb-6">
+                    <div>
+                        <h2 class="text-lg sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
+                            <i class="fa-solid fa-user-plus text-indigo-600"></i> Add New Contract
+                        </h2>
+                        <p class="text-slate-500 text-[11px] sm:text-xs mt-0.5">Fill in details below (Vehicle No. is optional).</p>
+                    </div>
+                    <span class="bg-indigo-50 text-indigo-700 border border-indigo-200 font-semibold px-2.5 py-1 rounded-full text-[10px] sm:text-xs shrink-0">
+                        <i class="fa-solid fa-lock"></i> Admin
+                    </span>
+                </div>
+
+                <form id="add-driver-form" onsubmit="handleAddDriver(event)" class="space-y-3 sm:space-y-5">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Full Name *</label>
+                            <input type="text" id="new-driver-name" required class="w-full bg-slate-50 border border-slate-300 rounded-lg sm:rounded-xl px-3 py-2 sm:px-4 sm:py-2.5 text-xs sm:text-sm text-slate-900 focus:outline-none focus:border-indigo-600">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Category *</label>
+                            <select id="new-driver-category" required class="w-full bg-slate-50 border border-slate-300 rounded-lg sm:rounded-xl px-3 py-2 sm:px-4 sm:py-2.5 text-xs sm:text-sm text-slate-900 focus:outline-none focus:border-indigo-600 font-semibold">
+                                <option value="Driver">Driver</option>
+                                <option value="Helper">Helper</option>
+                                <option value="Manager">Manager</option>
+                                <option value="Staff">Staff</option>
+                                <option value="Loader">Loader</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Phone Number *</label>
+                            <input type="text" id="new-driver-phone" required placeholder="+880 1711-000000" class="w-full bg-slate-50 border border-slate-300 rounded-lg sm:rounded-xl px-3 py-2 sm:px-4 sm:py-2.5 text-xs sm:text-sm text-slate-900 focus:outline-none focus:border-indigo-600">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 mb-1">Vehicle Reg. Number <span class="text-[10px] text-slate-400">(Optional)</span></label>
+                            <input type="text" id="new-driver-vehicle" class="w-full bg-slate-50 border border-slate-300 rounded-lg sm:rounded-xl px-3 py-2 sm:px-4 sm:py-2.5 text-xs sm:text-sm text-slate-900 focus:outline-none focus:border-indigo-600">
+                        </div>
+                    </div>
+                    <div class="pt-2">
+                        <button type="submit" class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-5 py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm transition-all shadow-md flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-plus"></i> Save Contract
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Manage, Edit & Delete Contracts Section -->
+            <div class="bg-white border border-slate-200 rounded-xl sm:rounded-2xl shadow-sm max-w-3xl mx-auto overflow-hidden">
+                <button onclick="toggleSection('delete-section', 'delete-icon')" class="w-full p-4 sm:p-6 text-left flex items-center justify-between hover:bg-slate-50 transition-colors focus:outline-none">
+                    <div class="flex items-center gap-2.5 sm:gap-3">
+                        <div class="p-2 sm:p-2.5 bg-indigo-50 text-indigo-600 rounded-lg sm:rounded-xl border border-indigo-100">
+                            <i class="fa-solid fa-list-check text-sm sm:text-lg"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-sm sm:text-lg font-bold text-slate-900">Manage, Edit & Delete Contracts</h3>
+                            <p class="text-[10px] sm:text-xs text-slate-500">Click to edit or remove existing entries.</p>
+                        </div>
+                    </div>
+                    <i id="delete-icon" class="fa-solid fa-chevron-down text-slate-400 text-xs sm:text-sm transition-transform duration-200"></i>
+                </button>
+                <div id="delete-section" class="hidden border-t border-slate-200 p-4 sm:p-6 bg-slate-50/50 space-y-3 sm:space-y-4">
+                    <div class="relative">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 sm:top-3 text-slate-400 text-xs sm:text-sm"></i>
+                        <input type="text" id="delete-search-input" onkeyup="renderAdminDeleteList()" placeholder="Search contract to edit/delete..." class="w-full bg-white border border-slate-300 rounded-lg sm:rounded-xl pl-9 pr-3 py-1.5 sm:py-2 text-xs sm:text-sm text-slate-800 focus:outline-none focus:border-indigo-500">
+                    </div>
+                    <div id="admin-delete-list" class="divide-y divide-slate-200 max-h-72 overflow-y-auto custom-scrollbar pr-1">
+                        <!-- Dynamic Delete/Edit Items -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- PIN Management Section -->
+            <div class="bg-white border border-slate-200 rounded-xl sm:rounded-2xl shadow-sm max-w-3xl mx-auto overflow-hidden">
+                <button onclick="toggleSection('password-section', 'password-icon')" class="w-full p-4 sm:p-6 text-left flex items-center justify-between hover:bg-slate-50 transition-colors focus:outline-none">
+                    <div class="flex items-center gap-2.5 sm:gap-3">
+                        <div class="p-2 sm:p-2.5 bg-indigo-50 text-indigo-600 rounded-lg sm:rounded-xl border border-indigo-100">
+                            <i class="fa-solid fa-key text-sm sm:text-lg"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-sm sm:text-lg font-bold text-slate-900">Change Security PIN</h3>
+                            <p class="text-[10px] sm:text-xs text-slate-500">Click to update your Admin Password/PIN.</p>
+                        </div>
+                    </div>
+                    <i id="password-icon" class="fa-solid fa-chevron-down text-slate-400 text-xs sm:text-sm transition-transform duration-200"></i>
+                </button>
+                <div id="password-section" class="hidden border-t border-slate-200 p-4 sm:p-6 bg-slate-50/50">
+                    <form onsubmit="handleChangePassword(event)" class="space-y-3 sm:space-y-4 max-w-md">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Current PIN *</label>
+                            <input type="password" id="curr-pin-input" required maxlength="10" placeholder="••••" class="w-full bg-white border border-slate-300 rounded-lg sm:rounded-xl px-3 py-2 text-xs sm:text-sm text-slate-900 focus:outline-none focus:border-indigo-600 font-mono">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">New PIN *</label>
+                            <input type="password" id="new-pin-input" required maxlength="10" placeholder="Enter new PIN" class="w-full bg-white border border-slate-300 rounded-lg sm:rounded-xl px-3 py-2 text-xs sm:text-sm text-slate-900 focus:outline-none focus:border-indigo-600 font-mono">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Confirm New PIN *</label>
+                            <input type="password" id="confirm-pin-input" required maxlength="10" placeholder="Re-enter new PIN" class="w-full bg-white border border-slate-300 rounded-lg sm:rounded-xl px-3 py-2 text-xs sm:text-sm text-slate-900 focus:outline-none focus:border-indigo-600 font-mono">
+                        </div>
+                        <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-4 py-2 sm:px-5 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm transition-all shadow-md flex items-center gap-2">
+                            <i class="fa-solid fa-arrows-rotate"></i> Update PIN
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
     </main>
 
-    <!-- Footer Attribution -->
-    <footer class="text-center p-6 text-gray-500 text-xs md:text-sm mt-8 border-t border-gray-200 bg-white">
-        <p>&copy; 2026 Vehicles Contract 2.0 | Developed by <span class="font-bold text-indigo-600">Md. Amirul Islam</span></p>
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-4 sm:py-6 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="text-[10px] sm:text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                &copy; <span id="current-year"></span> All Rights Reserved <span class="text-indigo-600 font-bold">MD AMIRUL ISLAM</span>
+            </p>
+        </div>
     </footer>
 
-    <!-- Scripts -->
+    <!-- Password Modal -->
+    <div id="password-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white border border-slate-200 rounded-2xl max-w-sm w-full p-5 sm:p-6 shadow-2xl">
+            <div class="text-center mb-5">
+                <div class="bg-indigo-50 text-indigo-600 border border-indigo-100 w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-2">
+                    <i class="fa-solid fa-shield-halved text-xl"></i>
+                </div>
+                <h3 class="text-lg font-bold text-slate-900">Admin Access Required</h3>
+                <p class="text-xs text-slate-500 mt-0.5">Enter Security PIN to unlock admin panel.</p>
+            </div>
+            <form onsubmit="handlePasswordSubmit(event)">
+                <div class="mb-4">
+                    <input type="password" id="admin-pass-input" maxlength="10" required placeholder="••••" class="w-full text-center tracking-widest text-2xl font-mono font-bold bg-slate-50 border-2 border-slate-300 rounded-xl px-3 py-2 text-slate-900 focus:outline-none focus:border-indigo-600">
+                    <p id="pass-error" class="text-rose-600 text-xs mt-1.5 text-center hidden font-semibold">
+                        <i class="fa-solid fa-circle-exclamation"></i> Incorrect PIN!
+                    </p>
+                </div>
+                <div class="flex space-x-2">
+                    <button type="button" onclick="closePasswordModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2 rounded-xl text-xs sm:text-sm font-semibold">Cancel</button>
+                    <button type="submit" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-xl text-xs sm:text-sm font-bold shadow-md">Unlock</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Contract Modal -->
+    <div id="edit-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white border border-slate-200 rounded-2xl max-w-md w-full p-5 sm:p-6 shadow-2xl">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-200 mb-4">
+                <h3 class="text-base sm:text-xl font-bold text-slate-900 flex items-center gap-2">
+                    <i class="fa-solid fa-pen-to-square text-indigo-600"></i> Edit Contract
+                </h3>
+                <button onclick="closeEditModal()" class="text-slate-400 hover:text-slate-600 text-lg">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <form onsubmit="handleUpdateDriver(event)" class="space-y-3 sm:space-y-4">
+                <input type="hidden" id="edit-driver-id">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Full Name *</label>
+                    <input type="text" id="edit-driver-name" required class="w-full bg-slate-50 border border-slate-300 rounded-lg sm:rounded-xl px-3 py-2 text-xs sm:text-sm text-slate-900 focus:outline-none focus:border-indigo-600">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Category *</label>
+                    <select id="edit-driver-category" required class="w-full bg-slate-50 border border-slate-300 rounded-lg sm:rounded-xl px-3 py-2 text-xs sm:text-sm text-slate-900 focus:outline-none focus:border-indigo-600 font-semibold">
+                        <option value="Driver">Driver</option>
+                        <option value="Helper">Helper</option>
+                        <option value="Manager">Manager</option>
+                        <option value="Staff">Staff</option>
+                        <option value="Loader">Loader</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Phone Number *</label>
+                    <input type="text" id="edit-driver-phone" required class="w-full bg-slate-50 border border-slate-300 rounded-lg sm:rounded-xl px-3 py-2 text-xs sm:text-sm text-slate-900 focus:outline-none focus:border-indigo-600">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 mb-1">Vehicle Reg. Number <span class="text-[10px] text-slate-400">(Optional)</span></label>
+                    <input type="text" id="edit-driver-vehicle" class="w-full bg-slate-50 border border-slate-300 rounded-lg sm:rounded-xl px-3 py-2 text-xs sm:text-sm text-slate-900 focus:outline-none focus:border-indigo-600">
+                </div>
+                <div class="flex space-x-2 pt-2">
+                    <button type="button" onclick="closeEditModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2 rounded-xl text-xs sm:text-sm font-semibold">Cancel</button>
+                    <button type="submit" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-xl text-xs sm:text-sm font-bold shadow-md">Update</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Application Script -->
     <script>
-        // ডেমো ডাটা (আপনার অরিজিনাল ডাটা দিয়ে রিপ্লেস করবেন)
-        let driversData = [
-            { name: "Abdur Rahim", category: "Heavy", phone: "01711000000", vehicle: "Dhaka Metro-Ta 11-2233 (Truck)", status: "Active" },
-            { name: "Karim Mia", category: "Light", phone: "01911000000", vehicle: "Dhaka Metro-Ga 22-4455 (Pickup)", status: "On Trip" },
-            { name: "Sajedul Islam", category: "Heavy", phone: "01811000000", vehicle: "Chatto Metro-Ta 14-5566 (Covered Van)", status: "Maintenance" }
+        let isLoggedIn = false;
+
+        const defaultDriversData = [
+            { id: 1, name: "Karim Hossain", category: "Driver", phone: "+880 1711-000000", vehicle: "Covered Van (DH-11-1234)", status: "Active" },
+            { id: 2, name: "Anisur Rahman", category: "Manager", phone: "+880 1511-000000", vehicle: "", status: "Active" },
+            { id: 3, name: "Rahim Uddin", category: "Helper", phone: "+880 1811-000000", vehicle: "Pickup Truck (DH-55-5678)", status: "Active" },
+            { id: 4, name: "Shafiqul Islam", category: "Staff", phone: "+880 1911-000000", vehicle: "Heavy Truck (DH-99-9876)", status: "Active" },
+            { id: 5, name: "Jamal Uddin", category: "Loader", phone: "+880 1611-000000", vehicle: "", status: "Active" }
         ];
 
-        // ক্যাটাগরি অনুযায়ী ব্যাজ কালার জেনারেট
-        function getCategoryBadgeClass(category) {
-            if(category === 'Heavy') return 'bg-red-100 text-red-700 border-red-200';
-            if(category === 'Light') return 'bg-blue-100 text-blue-700 border-blue-200';
-            return 'bg-gray-100 text-gray-700 border-gray-200';
+        let driversData = [];
+
+        function loadDriversData() {
+            const saved = localStorage.getItem('vehicles_contracts_data');
+            if (saved) {
+                try {
+                    driversData = JSON.parse(saved);
+                } catch (e) {
+                    driversData = defaultDriversData;
+                }
+            } else {
+                driversData = defaultDriversData;
+                saveDriversData();
+            }
         }
 
-        // টেবিল রেন্ডার ফাংশন (ওয়ার্ড র‍্যাপ ও ওভারফ্লো ফিক্স সহ)
+        function saveDriversData() {
+            localStorage.setItem('vehicles_contracts_data', JSON.stringify(driversData));
+        }
+
+        function getStoredPin() {
+            return localStorage.getItem('admin_pin') || "9876";
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            loadDriversData();
+            renderDriversTable(driversData);
+            updateDashboardStats();
+            document.getElementById('current-year').innerText = new Date().getFullYear();
+        });
+
+        function toggleSection(sectionId, iconId) {
+            const section = document.getElementById(sectionId);
+            const icon = document.getElementById(iconId);
+            if (section.classList.contains('hidden')) {
+                section.classList.remove('hidden');
+                icon.classList.add('rotate-180');
+            } else {
+                section.classList.add('hidden');
+                icon.classList.remove('rotate-180');
+            }
+        }
+
+        function switchTab(tabName) {
+            ['drivers', 'settings'].forEach(t => {
+                const btn = document.getElementById(`tab-${t}`);
+                if (btn) {
+                    btn.classList.remove('text-indigo-700', 'bg-white', 'shadow-sm');
+                    btn.classList.add('text-slate-600');
+                }
+                const content = document.getElementById(`content-${t}`);
+                if (content) content.classList.add('hidden');
+            });
+
+            const activeBtn = document.getElementById(`tab-${tabName}`);
+            activeBtn.classList.add('text-indigo-700', 'bg-white', 'shadow-sm');
+            activeBtn.classList.remove('text-slate-600');
+            document.getElementById(`content-${tabName}`).classList.remove('hidden');
+
+            if (tabName === 'settings') {
+                renderAdminDeleteList();
+            }
+        }
+
+        function openSettings() {
+            if (isLoggedIn) {
+                switchTab('settings');
+            } else {
+                showLoginModal();
+            }
+        }
+
+        function showLoginModal() {
+            document.getElementById('password-modal').classList.remove('hidden');
+            document.getElementById('admin-pass-input').value = '';
+            document.getElementById('pass-error').classList.add('hidden');
+            setTimeout(() => document.getElementById('admin-pass-input').focus(), 100);
+        }
+
+        function closePasswordModal() {
+            document.getElementById('password-modal').classList.add('hidden');
+        }
+
+        function handlePasswordSubmit(e) {
+            e.preventDefault();
+            const inputPass = document.getElementById('admin-pass-input').value;
+            if (inputPass === getStoredPin()) {
+                isLoggedIn = true;
+                closePasswordModal();
+                updateAuthUI();
+                switchTab('settings');
+            } else {
+                document.getElementById('pass-error').classList.remove('hidden');
+            }
+        }
+
+        function handleChangePassword(e) {
+            e.preventDefault();
+            const curr = document.getElementById('curr-pin-input').value;
+            const newPin = document.getElementById('new-pin-input').value;
+            const confirmPin = document.getElementById('confirm-pin-input').value;
+
+            if (curr !== getStoredPin()) {
+                alert("Incorrect current PIN!");
+                return;
+            }
+            if (newPin !== confirmPin) {
+                alert("New PIN and Confirm PIN do not match!");
+                return;
+            }
+            if (newPin.trim().length < 4) {
+                alert("New PIN must be at least 4 digits long.");
+                return;
+            }
+
+            localStorage.setItem('admin_pin', newPin);
+            alert("Security PIN updated successfully!");
+            document.getElementById('curr-pin-input').value = '';
+            document.getElementById('new-pin-input').value = '';
+            document.getElementById('confirm-pin-input').value = '';
+            toggleSection('password-section', 'password-icon');
+        }
+
+        function logout() {
+            isLoggedIn = false;
+            updateAuthUI();
+            switchTab('drivers');
+        }
+
+        function updateAuthUI() {
+            const loginBtn = document.getElementById('login-btn');
+            const userLoggedIn = document.getElementById('user-logged-in');
+            if (isLoggedIn) {
+                loginBtn.classList.add('hidden');
+                userLoggedIn.classList.remove('hidden');
+                userLoggedIn.classList.add('flex');
+            } else {
+                loginBtn.classList.remove('hidden');
+                userLoggedIn.classList.add('hidden');
+                userLoggedIn.classList.remove('flex');
+            }
+        }
+
+        function getCategoryBadgeClass(category) {
+            switch (category) {
+                case 'Manager': return 'bg-amber-100 text-amber-800 border-amber-200';
+                case 'Helper': return 'bg-emerald-100 text-emerald-800 border-emerald-200';
+                case 'Staff': return 'bg-purple-100 text-purple-800 border-purple-200';
+                case 'Loader': return 'bg-orange-100 text-orange-800 border-orange-200';
+                case 'Driver':
+                default: return 'bg-blue-100 text-blue-800 border-blue-200';
+            }
+        }
+
         function renderDriversTable(data) {
-            const tbody = document.getElementById('tableBody');
-            
-            if(data.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-gray-500 font-medium">No contracts found.</td></tr>`;
+            const tbody = document.getElementById('driver-table-body');
+            if (data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-slate-400">No matching records found.</td></tr>`;
                 return;
             }
 
             tbody.innerHTML = data.map(d => `
                 <tr class="hover:bg-slate-50 transition-colors">
-                    <td class="p-4 pl-6 font-bold text-slate-900 flex items-center gap-3 min-w-[180px]">
-                        <div class="w-9 h-9 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-extrabold text-sm shrink-0 shadow-inner">${d.name.charAt(0)}</div>
-                        <span class="break-words">${d.name}</span>
+                    <td class="p-3 sm:p-4 pl-4 sm:pl-6 font-bold text-slate-900">
+                        <div class="flex items-center gap-2 sm:gap-3">
+                            <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-extrabold text-xs shrink-0">${d.name.charAt(0)}</div>
+                            <span>${d.name}</span>
+                        </div>
                     </td>
-                    <td class="p-4">
-                        <span class="inline-block w-20 text-center py-1 text-xs font-bold rounded-md border leading-tight ${getCategoryBadgeClass(d.category)}">${d.category || 'N/A'}</span>
+                    <td class="p-3 sm:p-4 whitespace-nowrap">
+                        <span class="inline-block px-2 py-0.5 sm:px-2.5 sm:py-1 text-[11px] sm:text-xs font-bold rounded-lg border leading-tight ${getCategoryBadgeClass(d.category)}">${d.category || 'Driver'}</span>
                     </td>
-                    <td class="p-4 min-w-[150px]">
-                        <div class="flex items-center gap-2 flex-wrap">
-                            <span class="font-mono font-bold text-slate-800 tracking-wide break-all">${d.phone}</span>
-                            <a href="tel:${d.phone.replace(/[^0-9+]/g, '')}" 
-                               title="Call ${d.name}"
-                               class="bg-emerald-500 hover:bg-emerald-600 text-white px-2 py-1 rounded text-xs font-bold transition-all flex items-center gap-1 shadow-sm shrink-0">
-                                <i class="fa-solid fa-phone text-[10px]"></i> Call
+                    <td class="p-3 sm:p-4 whitespace-nowrap">
+                        <div class="flex items-center gap-2">
+                            <span class="font-mono font-extrabold text-xs sm:text-sm text-slate-900">${d.phone}</span>
+                            <a href="tel:${d.phone.replace(/[^0-9+]/g, '')}" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-md sm:rounded-lg text-[10px] sm:text-xs font-bold transition-all flex items-center gap-1 shadow-sm">
+                                <i class="fa-solid fa-phone"></i> Call
                             </a>
                         </div>
                     </td>
-                    <td class="p-4 text-slate-700 font-medium break-words min-w-[180px] max-w-[220px]">
-                        ${d.vehicle ? d.vehicle : '<span class="text-slate-400 font-normal">—</span>'}
-                    </td>
-                    <td class="p-4 pr-6 min-w-[120px]">
-                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 shrink-0 border border-emerald-200">
-                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-sm"></span>${d.status}
+                    <td class="p-3 sm:p-4 text-slate-700 font-medium">${d.vehicle ? d.vehicle : '<span class="text-slate-400">—</span>'}</td>
+                    <td class="p-3 sm:p-4 pr-4 sm:pr-6 whitespace-nowrap">
+                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-bold bg-emerald-100 text-emerald-800">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>${d.status}
                         </span>
                     </td>
                 </tr>
             `).join('');
         }
 
-        // লাইভ সার্চ ফিল্টার
-        document.getElementById('searchInput').addEventListener('input', (e) => {
-            const term = e.target.value.toLowerCase();
-            const filtered = driversData.filter(d => 
-                d.name.toLowerCase().includes(term) || 
-                d.phone.includes(term) || 
-                (d.vehicle && d.vehicle.toLowerCase().includes(term))
-            );
-            renderDriversTable(filtered);
-        });
+        function renderAdminDeleteList() {
+            const container = document.getElementById('admin-delete-list');
+            const searchQuery = (document.getElementById('delete-search-input')?.value || '').toLowerCase().trim();
 
-        // এডমিন লগিন পপ-আপ
-        function adminLogin() {
-            const pass = prompt("Enter Admin Password:");
-            if(pass) {
-                // আপনার এডমিন অথেন্টিকেশন লজিক এখানে বসাবেন
-                if(pass === "admin123") {
-                    alert("Access Granted!");
-                } else {
-                    alert("Incorrect Password!");
-                }
+            const filteredData = driversData.filter(d => 
+                d.name.toLowerCase().includes(searchQuery) ||
+                d.phone.includes(searchQuery) ||
+                (d.category && d.category.toLowerCase().includes(searchQuery)) ||
+                (d.vehicle && d.vehicle.toLowerCase().includes(searchQuery))
+            );
+
+            if (filteredData.length === 0) {
+                container.innerHTML = `<p class="text-center text-slate-400 py-3 text-xs">No matching records found.</p>`;
+                return;
+            }
+
+            container.innerHTML = filteredData.map(d => `
+                <div class="py-2.5 flex items-center justify-between gap-2">
+                    <div class="flex items-center gap-2 min-w-0">
+                        <span class="inline-block px-1.5 py-0.5 text-[10px] font-bold rounded border shrink-0 ${getCategoryBadgeClass(d.category)}">${d.category}</span>
+                        <div class="truncate">
+                            <h5 class="text-xs sm:text-sm font-bold text-slate-900 truncate">${d.name}</h5>
+                            <p class="text-[10px] sm:text-xs font-mono font-semibold text-slate-500 truncate">${d.phone} ${d.vehicle ? '• ' + d.vehicle : ''}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1.5 shrink-0">
+                        <button onclick="openEditModal(${d.id})" class="px-2 py-1 sm:px-2.5 sm:py-1 bg-indigo-50 hover:bg-indigo-600 text-indigo-600 hover:text-white rounded-md text-[11px] sm:text-xs font-bold border border-indigo-200">
+                            Edit
+                        </button>
+                        <button onclick="deleteContract(${d.id})" class="px-2 py-1 sm:px-2.5 sm:py-1 bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white rounded-md text-[11px] sm:text-xs font-bold border border-rose-200">
+                            Delete
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openEditModal(id) {
+            const driver = driversData.find(d => d.id === id);
+            if (!driver) return;
+
+            document.getElementById('edit-driver-id').value = driver.id;
+            document.getElementById('edit-driver-name').value = driver.name;
+            document.getElementById('edit-driver-category').value = driver.category || 'Driver';
+            document.getElementById('edit-driver-phone').value = driver.phone;
+            document.getElementById('edit-driver-vehicle').value = driver.vehicle || '';
+
+            document.getElementById('edit-modal').classList.remove('hidden');
+        }
+
+        function closeEditModal() {
+            document.getElementById('edit-modal').classList.add('hidden');
+        }
+
+        function handleUpdateDriver(e) {
+            e.preventDefault();
+            const id = parseInt(document.getElementById('edit-driver-id').value);
+            const name = document.getElementById('edit-driver-name').value;
+            const category = document.getElementById('edit-driver-category').value;
+            const phone = document.getElementById('edit-driver-phone').value;
+            const vehicle = document.getElementById('edit-driver-vehicle').value.trim();
+
+            const driverIndex = driversData.findIndex(d => d.id === id);
+            if (driverIndex !== -1) {
+                driversData[driverIndex] = {
+                    ...driversData[driverIndex],
+                    name,
+                    category,
+                    phone,
+                    vehicle: vehicle || ""
+                };
+
+                saveDriversData();
+                renderDriversTable(driversData);
+                renderAdminDeleteList();
+                closeEditModal();
+                alert('Contract updated successfully!');
             }
         }
 
-        // প্রথমে একবার টেবিল রেন্ডার করা
-        window.addEventListener('DOMContentLoaded', () => {
+        function deleteContract(id) {
+            if (confirm("Are you sure you want to delete this contract?")) {
+                driversData = driversData.filter(d => d.id !== id);
+                saveDriversData();
+                renderDriversTable(driversData);
+                renderAdminDeleteList();
+                updateDashboardStats();
+            }
+        }
+
+        function updateDashboardStats() {
+            const total = driversData.length;
+            const active = driversData.filter(d => d.status === 'Active').length;
+            document.getElementById('stat-total').innerText = total;
+            document.getElementById('stat-active').innerText = active;
+        }
+
+        function filterDrivers() {
+            const query = document.getElementById('search-input').value.toLowerCase();
+            const filtered = driversData.filter(d => 
+                d.name.toLowerCase().includes(query) ||
+                (d.category && d.category.toLowerCase().includes(query)) ||
+                d.vehicle.toLowerCase().includes(query) ||
+                d.phone.includes(query)
+            );
+            renderDriversTable(filtered);
+        }
+
+        function handleAddDriver(e) {
+            e.preventDefault();
+            const name = document.getElementById('new-driver-name').value;
+            const category = document.getElementById('new-driver-category').value;
+            const phone = document.getElementById('new-driver-phone').value;
+            const vehicle = document.getElementById('new-driver-vehicle').value.trim();
+
+            const newEntry = {
+                id: Date.now(),
+                name,
+                category,
+                phone,
+                vehicle: vehicle || "",
+                status: 'Active'
+            };
+
+            driversData.push(newEntry);
+            saveDriversData();
             renderDriversTable(driversData);
-        });
+            updateDashboardStats();
+            renderAdminDeleteList();
+
+            document.getElementById('add-driver-form').reset();
+            alert('New contract added successfully!');
+            switchTab('drivers');
+        }
     </script>
 </body>
 </html>
